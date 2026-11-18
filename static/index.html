@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V60 Brew Dial-In Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-crema: #f6f1ea;
+            --bg-latte: #efe7dc;
+            --card-milk: #fffcf8;
+            --espresso: #2b1d16;
+            --roast: #4a3225;
+            --caramel: #b86b35;
+            --caramel-hover: #9c5625;
+            --sage: #3d6b52;
+            --border-warm: #e2d6c7;
+            --text-muted: #7a6658;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            background: radial-gradient(circle at top right, #efe4d6 0%, var(--bg-crema) 55%);
+            color: var(--espresso);
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        /* Header with animated V60 pour-over illustration */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            background: linear-gradient(135deg, #2b1d16 0%, #442c20 100%);
+            color: #fcf8f3;
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 1.75rem;
+            box-shadow: 0 10px 25px rgba(43, 29, 22, 0.14);
+        }
+
+        .hero h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.85rem;
+            margin: 0 0 0.35rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero p {
+            margin: 0;
+            color: #dccbb8;
+            font-size: 0.95rem;
+            max-width: 580px;
+            line-height: 1.45;
+        }
+
+        /* Animated V60 SVG */
+        .v60-art {
+            flex-shrink: 0;
+            width: 88px;
+            height: 96px;
+        }
+
+        .steam {
+            fill: none;
+            stroke: #e6cbb3;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            opacity: 0;
+            animation: rise 2.8s infinite ease-in-out;
+        }
+        .steam-2 { animation-delay: 0.9s; }
+        .steam-3 { animation-delay: 1.8s; }
+
+        .drip {
+            fill: #c87d4b;
+            animation: dropFall 1.6s infinite ease-in;
+        }
+
+        @keyframes rise {
+            0% { transform: translateY(6px); opacity: 0; }
+            40% { opacity: 0.75; }
+            100% { transform: translateY(-10px); opacity: 0; }
+        }
+
+        @keyframes dropFall {
+            0% { transform: translateY(0px) scale(0.8); opacity: 0; }
+            25% { opacity: 1; }
+            85% { transform: translateY(18px) scale(1); opacity: 1; }
+            100% { transform: translateY(22px) scale(0.6); opacity: 0; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.08fr 0.92fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        @media (max-width: 820px) {
+            .grid { grid-template-columns: 1fr; }
+            .hero { flex-direction: column; text-align: center; }
+        }
+
+        .card {
+            background: var(--card-milk);
+            border: 1px solid var(--border-warm);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 16px rgba(74, 50, 37, 0.05);
+        }
+
+        .card h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.25rem;
+            margin: 0 0 1rem;
+            color: var(--espresso);
+        }
+
+        /* Stopwatch */
+        .timer-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-latte);
+            border: 1px solid var(--border-warm);
+            padding: 0.9rem 1.1rem;
+            border-radius: 12px;
+            margin-bottom: 1.2rem;
+        }
+
+        .timer-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .timer-display {
+            font-family: 'Fraunces', monospace;
+            font-size: 1.85rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            color: var(--espresso);
+        }
+
+        .timer-running .timer-display {
+            color: var(--caramel);
+        }
+
+        /* Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.85rem;
+        }
+
+        .field { display: flex; flex-direction: column; gap: 0.3rem; }
+        .field.full { grid-column: span 2; }
+
+        label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--roast);
+        }
+
+        input[type="text"], input[type="number"], select {
+            padding: 0.55rem 0.75rem;
+            border: 1px solid var(--border-warm);
+            border-radius: 8px;
+            font-size: 0.94rem;
+            font-family: inherit;
+            background: #fff;
+            color: var(--espresso);
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--caramel);
+            box-shadow: 0 0 0 3px rgba(184, 107, 53, 0.15);
+        }
+
+        /* Taste Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #eab308 0%, #3d6b52 50%, #5c2d16 100%);
+            outline: none;
+            margin: 0.4rem 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            border: 3px solid var(--espresso);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .scale-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.76rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Buttons */
+        button {
+            padding: 0.65rem 1.1rem;
+            background: var(--caramel);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.08s;
+        }
+
+        button:hover { background: var(--caramel-hover); }
+        button:active { transform: scale(0.99); }
+
+        button.secondary {
+            background: #fff;
+            color: var(--roast);
+            border: 1px solid var(--border-warm);
+        }
+        button.secondary:hover { background: var(--bg-latte); }
+
+        /* Advisor Card */
+        .advisor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: #efe2d3;
+            color: var(--caramel-hover);
+        }
+
+        .rec-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.65rem;
+            margin: 1rem 0;
+        }
+
+        .stat {
+            background: var(--bg-crema);
+            border: 1px solid var(--border-warm);
+            padding: 0.85rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat strong {
+            display: block;
+            font-family: 'Fraunces', serif;
+            font-size: 1.35rem;
+            color: var(--espresso);
+        }
+
+        .stat span {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .reason-list {
+            list-style: none;
+            padding: 0;
+            margin: 0.6rem 0 0;
+        }
+
+        .reason-list li {
+            position: relative;
+            padding-left: 1.35rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.45;
+            color: var(--roast);
+        }
+
+        .reason-list li::before {
+            content: "☕";
+            position: absolute;
+            left: 0;
+            font-size: 0.8rem;
+        }
+
+        /* History Table */
+        .history-card { margin-top: 1.5rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.65rem 0.75rem;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--text-muted);
+            border-bottom: 2px solid var(--border-warm);
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #efe7dc;
+        }
+
+        tr:hover td { background: #fbf7f2; }
+
+        .taste-badge {
+            display: inline-block;
+            min-width: 2.2rem;
+            text-align: center;
+            padding: 0.2rem 0.5rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+        .taste-sour { background: #fef3c7; color: #92400e; }
+        .taste-good { background: #dcfce7; color: #166534; }
+        .taste-bitter { background: #f3e8e2; color: #7c2d12; }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--espresso);
+            color: #fff;
+            padding: 0.75rem 1.15rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.2s, transform 0.2s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+    <header class="hero">
+        <div>
+            <h1>V60 Brew Dial-In Studio</h1>
+            <p>Dial in pre-ground filter coffee using water temperature, brew ratio, and pour agitation—tracked cup by cup until you hit the sweet spot.</p>
+        </div>
+
+        <!-- Animated V60 Dripper & Carafe Illustration -->
+        <svg class="v60-art" viewBox="0 0 100 110" aria-hidden="true">
+            <!-- Rising Steam -->
+            <path class="steam steam-1" d="M38 22 C35 16, 41 12, 38 6" />
+            <path class="steam steam-2" d="M50 20 C47 14, 53 10, 50 4" />
+            <path class="steam steam-3" d="M62 22 C59 16, 65 12, 62 6" />
+
+            <!-- V60 Cone -->
+            <polygon points="24,28 76,28 56,56 44,56" fill="#fcf8f3" stroke="#d6c5b3" stroke-width="2" />
+            <!-- Spiral Ribs -->
+            <line x1="34" y1="32" x2="46" y2="52" stroke="#e2d6c7" stroke-width="1.5" />
+            <line x1="50" y1="30" x2="50" y2="53" stroke="#e2d6c7" stroke-width="1.5" />
+            <line x1="66" y1="32" x2="54" y2="52" stroke="#e2d6c7" stroke-width="1.5" />
+            <!-- Dripper Base -->
+            <rect x="33" y="56" width="34" height="4" rx="2" fill="#b86b35" />
+
+            <!-- Falling Coffee Drop -->
+            <circle class="drip" cx="50" cy="63" r="3" />
+
+            <!-- Glass Server / Carafe -->
+            <path d="M36 62 L64 62 L70 96 C70 100, 66 102, 62 102 L38 102 C34 102, 30 100, 30 96 Z"
+                  fill="rgba(255,255,255,0.12)" stroke="#dccbb8" stroke-width="2" />
+            <!-- Brewed Coffee Pool -->
+            <path d="M32 84 L68 84 L69.5 95 C69.5 99, 66 101, 62 101 L38 101 C34 101, 30.5 99, 30.5 95 Z"
+                  fill="#8c4a27" />
+        </svg>
+    </header>
+
+    <div class="grid">
+        <!-- Left Column: Brew Stopwatch & Logger -->
+        <section class="card">
+            <h3>1. Brew Timer & Log</h3>
+
+            <div id="timerBox" class="timer-box">
+                <div>
+                    <div class="timer-label">Drawdown Stopwatch</div>
+                    <div id="timerDisplay" class="timer-display">00:00</div>
+                </div>
+                <div style="display: flex; gap: 0.45rem;">
+                    <button type="button" id="startStopBtn" onclick="toggleTimer()">Start Pour</button>
+                    <button type="button" class="secondary" onclick="resetTimer()">Reset</button>
+                </div>
+            </div>
+
+            <form id="brewForm" class="form-grid">
+                <div class="field">
+                    <label for="beanName">Coffee / Bag Name</label>
+                    <input type="text" id="beanName" list="beanSuggestions" value="Ethiopia Guji Pre-Ground" required>
+                    <datalist id="beanSuggestions"></datalist>
+                </div>
+                <div class="field">
+                    <label for="roastLevel">Roast Level</label>
+                    <select id="roastLevel">
+                        <option value="light">Light Roast</option>
+                        <option value="medium" selected>Medium Roast</option>
+                        <option value="dark">Dark Roast</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="coffeeG">Coffee Dose (g)</label>
+                    <input type="number" id="coffeeG" step="0.5" value="15" required>
+                </div>
+                <div class="field">
+                    <label for="waterG">Total Water (g)</label>
+                    <input type="number" id="waterG" step="5" value="250" required>
+                </div>
+                <div class="field">
+                    <label for="waterTemp">Water Temp (°C)</label>
+                    <input type="number" id="waterTemp" min="80" max="100" value="93" required>
+                </div>
+                <div class="field">
+                    <label for="pourCount">Pour Structure</label>
+                    <select id="pourCount">
+                        <option value="2">2 Pours (Bloom + 1)</option>
+                        <option value="3" selected>3 Pours (Bloom + 2)</option>
+                        <option value="4">4 Pours (High Agitation)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="drawdownSec">Drawdown Time (sec)</label>
+                    <input type="number" id="drawdownSec" min="30" max="600" value="165" required>
+                </div>
+                <div class="field">
+                    <label for="swirl">Gentle Rao Swirl?</label>
+                    <select id="swirl">
+                        <option value="true" selected>Yes (Even Bed)</option>
+                        <option value="false">No Swirl</option>
+                    </select>
+                </div>
+
+                <div class="field full">
+                    <label for="tasteScore">
+                        Cup Balance: <span id="tasteLabel" style="color: var(--sage);">0 — Balanced Sweet Spot</span>
+                    </label>
+                    <input type="range" id="tasteScore" min="-5" max="5" value="0" oninput="updateTasteLabel(this.value)">
+                    <div class="scale-labels">
+                        <span>-5 Sour / Sharp</span>
+                        <span>0 Sweet Spot</span>
+                        <span>+5 Bitter / Dry</span>
+                    </div>
+                </div>
+
+                <div class="field full">
+                    <label for="notes">Tasting Notes (optional)</label>
+                    <input type="text" id="notes" placeholder="e.g. juicy bergamot, clean finish, slightly hollow">
+                </div>
+
+                <div class="field full">
+                    <button type="submit" style="width: 100%; padding: 0.75rem;">Log Brew & Dial In Next Cup</button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Right Column: Next Cup Recommendation -->
+        <section class="card">
+            <div class="advisor-header">
+                <h3 style="margin: 0;">2. Next Cup Recipe</h3>
+                <span id="strategyBadge" class="badge">Loading...</span>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
+                Dialed target for <strong id="activeBeanTitle" style="color: var(--espresso);">Ethiopia Guji Pre-Ground</strong>
+            </p>
+
+            <div class="rec-stats">
+                <div class="stat">
+                    <strong id="recTemp">--°C</strong>
+                    <span>Water Temp</span>
+                </div>
+                <div class="stat">
+                    <strong id="recWater">--g</strong>
+                    <span>Water (1:<span id="recRatio">--</span>)</span>
+                </div>
+                <div class="stat">
+                    <strong id="recPours">--</strong>
+                    <span>Pour Stages</span>
+                </div>
+                <div class="stat">
+                    <strong id="recSwirl">--</strong>
+                    <span>Swirl</span>
+                </div>
+            </div>
+
+            <button type="button" class="secondary" style="width: 100%; margin-bottom: 1.15rem;" onclick="applyRecommendation()">
+                ↓ Copy Recommended Recipe into Form
+            </button>
+
+            <div style="font-size: 0.85rem; font-weight: 700; color: var(--roast);">Barista Dial-In Reasoning:</div>
+            <ul id="recReasons" class="reason-list"></ul>
+        </section>
+    </div>
+
+    <!-- Bottom: Brew History -->
+    <section class="card history-card">
+        <h3>3. Brew Log History</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Cup</th>
+                    <th>Coffee / Bag</th>
+                    <th>Dose & Ratio</th>
+                    <th>Temp</th>
+                    <th>Technique</th>
+                    <th>Drawdown</th>
+                    <th>Balance</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </section>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let timerInterval = null;
+        let elapsedSeconds = 0;
+        let latestRec = null;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2400);
+        }
+
+        function toggleTimer() {
+            const btn = document.getElementById('startStopBtn');
+            const box = document.getElementById('timerBox');
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                btn.textContent = 'Start Pour';
+                box.classList.remove('timer-running');
+                if (elapsedSeconds >= 30) {
+                    document.getElementById('drawdownSec').value = elapsedSeconds;
+                    showToast(`Drawdown time set to ${elapsedSeconds}s`);
+                }
+            } else {
+                btn.textContent = 'Stop';
+                box.classList.add('timer-running');
+                timerInterval = setInterval(() => {
+                    elapsedSeconds++;
+                    const mins = String(Math.floor(elapsedSeconds / 60)).padStart(2, '0');
+                    const secs = String(elapsedSeconds % 60).padStart(2, '0');
+                    document.getElementById('timerDisplay').textContent = `${mins}:${secs}`;
+                }, 1000);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            elapsedSeconds = 0;
+            document.getElementById('startStopBtn').textContent = 'Start Pour';
+            document.getElementById('timerBox').classList.remove('timer-running');
+            document.getElementById('timerDisplay').textContent = '00:00';
+        }
+
+        function updateTasteLabel(val) {
+            const v = Number(val);
+            const label = document.getElementById('tasteLabel');
+            if (v < 0) {
+                label.style.color = '#b45309';
+                label.textContent = `${v} — Sour / Under-extracted`;
+            } else if (v > 0) {
+                label.style.color = '#7c2d12';
+                label.textContent = `+${v} — Bitter / Over-extracted`;
+            } else {
+                label.style.color = '#3d6b52';
+                label.textContent = `0 — Balanced Sweet Spot`;
+            }
+        }
+
+        function formatTasteBadge(score) {
+            if (score < 0) return `<span class="taste-badge taste-sour">${score}</span>`;
+            if (score > 0) return `<span class="taste-badge taste-bitter">+${score}</span>`;
+            return `<span class="taste-badge taste-good">0</span>`;
+        }
+
+        async function refreshDashboard() {
+            const beansRes = await fetch('/api/beans');
+            const beans = await beansRes.json();
+            document.getElementById('beanSuggestions').innerHTML =
+                beans.map(b => `<option value="${b}">`).join('');
+            const beanName = document.getElementById('beanName').value.trim();
+            document.getElementById('activeBeanTitle').textContent = beanName || 'All Beans';
+            const query = beanName ? `?bean_name=${encodeURIComponent(beanName)}` : '';
+
+            const [recRes, brewsRes] = await Promise.all([
+                fetch(`/api/recommend${query}`),
+                fetch(`/api/brews${query}`)
+            ]);
+
+            latestRec = await recRes.json();
+            document.getElementById('strategyBadge').textContent = latestRec.strategy;
+            document.getElementById('recTemp').textContent = `${latestRec.suggested_temp_c}°C`;
+            document.getElementById('recWater').textContent = `${latestRec.suggested_water_g}g`;
+            document.getElementById('recRatio').textContent = latestRec.suggested_ratio;
+            document.getElementById('recPours').textContent = `${latestRec.suggested_pour_count} pours`;
+            document.getElementById('recSwirl').textContent = latestRec.suggested_swirl ? 'Yes' : 'No';
+
+            const reasonsList = document.getElementById('recReasons');
+            reasonsList.innerHTML = latestRec.explanation.map(r => `<li>${r}</li>`).join('');
+
+            const brews = await brewsRes.json();
+            const tbody = document.getElementById('historyBody');
+            if (!brews.length) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color: var(--text-muted); padding: 1.5rem;">No brews logged yet for this coffee bag. Brew a cup and log how it tasted!</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = brews.map((b, idx) => `
+                <tr>
+                    <td><strong>#${brews.length - idx}</strong></td>
+                    <td><strong>${b.bean_name}</strong> <span style="color:var(--text-muted); font-size:0.8rem;">(${b.roast_level})</span></td>
+                    <td>${b.coffee_g}g → ${b.water_g}g <span style="color:var(--text-muted)">(1:${b.ratio})</span></td>
+                    <td>${b.water_temp_c}°C</td>
+                    <td>${b.pour_count} pours · ${b.swirl ? 'swirl' : 'no swirl'}</td>
+                    <td>${b.drawdown_sec}s</td>
+                    <td>${formatTasteBadge(b.taste_score)}</td>
+                    <td style="color: var(--text-muted);">${b.notes || '—'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function applyRecommendation() {
+            if (!latestRec) return;
+            document.getElementById('waterTemp').value = latestRec.suggested_temp_c;
+            document.getElementById('waterG').value = latestRec.suggested_water_g;
+            document.getElementById('pourCount').value = latestRec.suggested_pour_count;
+            document.getElementById('swirl').value = String(latestRec.suggested_swirl);
+            showToast('Applied recommended recipe to form');
+        }
+
+        document.getElementById('brewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                bean_name: document.getElementById('beanName').value,
+                roast_level: document.getElementById('roastLevel').value,
+                coffee_g: Number(document.getElementById('coffeeG').value),
+                water_g: Number(document.getElementById('waterG').value),
+                water_temp_c: Number(document.getElementById('waterTemp').value),
+                pour_count: Number(document.getElementById('pourCount').value),
+                swirl: document.getElementById('swirl').value === 'true',
+                drawdown_sec: Number(document.getElementById('drawdownSec').value),
+                taste_score: Number(document.getElementById('tasteScore').value),
+                notes: document.getElementById('notes').value
+            };
+
+            await fetch('/api/brews', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            document.getElementById('notes').value = '';
+            showToast('Brew logged & next cup updated!');
+            refreshDashboard();
+        });
+
+        document.getElementById('beanName').addEventListener('change', refreshDashboard);
+        refreshDashboard();
+    </script>
+</body>
+</html>
