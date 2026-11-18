@@ -5,6 +5,8 @@ I love using a V60 for filter coffee—the whole pour-over process is a nice mor
 
 Since I brew with pre-ground coffee and don't own a burr grinder, I couldn't just adjust grind clicks like most coffee guides tell you to. So I built this app to track each brew and dial in the variables I *can* control—water temperature, brew ratio, pour structure, and swirling—until every cup hits the exact taste profile I want.
 
+<img width="1075" height="782" alt="Screenshot 2026-11-18 at 16 35 27" src="https://github.com/user-attachments/assets/d18e6ca8-e91f-450f-bf94-f6bca4d4c4de" />
+
 ---
 
 ## Features
