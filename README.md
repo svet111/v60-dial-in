@@ -134,8 +134,3 @@ Run the automated test suite (`pytest`) to verify the heuristic extraction rules
     pytest
     ```
 
-```
-
-*(Note: Make sure you've also added the `GET /api/beans` endpoint and `~/.v60-dial-in/v60_brews.db` path to `app/database.py`, `app/main.py`, and `static/index.html` from the previous step so the autocomplete dropdown and persistent database path match the guide!)*
-
-```
