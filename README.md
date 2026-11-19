@@ -93,7 +93,7 @@ Once you have set up `.venv` above, you can launch the app anytime directly from
 | **Drawdown Time (sec)** | Total time from the start of your bloom pour until the water finishes draining. | Typically `140s – 210s` (`2:20 – 3:30`). Use the built-in **Drawdown Stopwatch** to fill this automatically. |
 | **Cup Balance (`-5` to `+5`)** | Your taste feedback on the finished cup. | `-5` = very sour/under-extracted, `0` = balanced sweet spot, `+5` = very bitter/over-extracted. |
 
-### 3. How Suggestions Work (and When ML Kicks In)
+### 3. How Suggestions Work
 
 The **Next Cup Recipe** panel updates immediately every time you log a cup, adapting to how much data you have for that specific bag:
 
